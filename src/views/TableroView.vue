@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import useFetchVuelos from '../composables/useFetchVuelos.js'
 import VueloCard from '../components/VueloCard.vue'
+import { claveDia, etiquetaDia } from '../utils/fecha.js'
 
 const { data, loading, error, retrieveVuelos } = useFetchVuelos()
 
@@ -9,6 +10,7 @@ const aeropuerto = ref('AEP')
 const tipo = ref('todos')
 const estado = ref(null)
 const busqueda = ref('')
+const dia = ref('todos')
 
 const ESTADOS = [
   { valor: 'a horario', label: 'A horario', punto: 'bg-green-600' },
@@ -19,6 +21,13 @@ const ESTADOS = [
 
 const delAeropuerto = computed(() => data.value.filter((v) => v.aeropuerto === aeropuerto.value))
 
+// los días que tienen vuelos en este aeropuerto, para los botones de fecha
+const dias = computed(() => {
+  const unicos = new Map()
+  delAeropuerto.value.forEach((v) => unicos.set(claveDia(v.fecha_hora), etiquetaDia(v.fecha_hora)))
+  return [...unicos].sort(([a], [b]) => a.localeCompare(b)).map(([clave, label]) => ({ clave, label }))
+})
+
 const normalizar = (texto) =>
   (texto ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 
@@ -26,6 +35,7 @@ const normalizar = (texto) =>
 const vuelosVisibles = computed(() => {
   const texto = normalizar(busqueda.value.trim())
   return delAeropuerto.value
+    .filter((v) => dia.value === 'todos' || claveDia(v.fecha_hora) === dia.value)
     .filter((v) => tipo.value === 'todos' || v.tipo === tipo.value)
     .filter((v) => !texto || normalizar(v.numero).includes(texto) || normalizar(v.origen_destino).includes(texto))
 })
@@ -42,6 +52,7 @@ const vuelosFiltrados = computed(() =>
 const cambiarAeropuerto = (codigo) => {
   aeropuerto.value = codigo
   estado.value = null
+  dia.value = 'todos'
 }
 
 const toggleEstado = (valor) => {
@@ -52,6 +63,7 @@ const limpiarFiltros = () => {
   tipo.value = 'todos'
   estado.value = null
   busqueda.value = ''
+  dia.value = 'todos'
 }
 
 onMounted(() => retrieveVuelos())
@@ -125,6 +137,20 @@ onMounted(() => retrieveVuelos())
           {{ t.n }}
         </button>
       </div>
+    </div>
+
+    <div v-if="dias.length > 1" role="group" aria-label="Filtrar por día" class="flex flex-wrap gap-2 -mt-2">
+      <button
+        v-for="d in [{ clave: 'todos', label: 'Todos los días' }, ...dias]"
+        :key="d.clave"
+        type="button"
+        :aria-pressed="dia === d.clave"
+        @click="dia = d.clave"
+        class="h-9 px-4 rounded-full text-sm font-bold border capitalize"
+        :class="dia === d.clave ? 'bg-brand border-brand text-white' : 'bg-surface-card border-surface-border text-text-muted hover:bg-gray-100'"
+      >
+        {{ d.label }}
+      </button>
     </div>
 
     <p v-if="error" role="alert" class="text-red-700 bg-red-50 border border-red-200 rounded-btn px-4 py-3 font-semibold">{{ error }}</p>

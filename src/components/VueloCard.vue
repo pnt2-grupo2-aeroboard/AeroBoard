@@ -1,16 +1,11 @@
 <script setup>
 import { computed } from 'vue'
+import { etiquetaDia } from '../utils/fecha.js'
+import { CIUDADES } from '../services/vuelos.js'
 
 const props = defineProps({
   vuelo: { type: Object, required: true }
 })
-
-const CODIGOS = {
-  'Córdoba': 'COR', 'Bariloche': 'BRC', 'Mendoza': 'MDZ', 'Ushuaia': 'USH',
-  'Salta': 'SLA', 'Iguazú': 'IGR', 'El Calafate': 'FTE', 'Tucumán': 'TUC',
-  'Neuquén': 'NQN', 'Río de Janeiro': 'GIG', 'São Paulo': 'GRU',
-  'Miami': 'MIA', 'Madrid': 'MAD',
-}
 
 const ESTADOS = {
   'a horario': { label: 'A horario', clases: 'bg-green-50 text-green-700 border-green-200' },
@@ -20,10 +15,11 @@ const ESTADOS = {
 }
 
 const esPartida = computed(() => props.vuelo.tipo === 'partida')
-const codigoCiudad = computed(() => CODIGOS[props.vuelo.origen_destino] ?? props.vuelo.origen_destino.slice(0, 3).toUpperCase())
+const codigoCiudad = computed(() => CIUDADES[props.vuelo.origen_destino] ?? props.vuelo.origen_destino.slice(0, 3).toUpperCase())
 const origen = computed(() => esPartida.value ? props.vuelo.aeropuerto : codigoCiudad.value)
 const destino = computed(() => esPartida.value ? codigoCiudad.value : props.vuelo.aeropuerto)
 const estado = computed(() => ESTADOS[props.vuelo.estado])
+const dia = computed(() => etiquetaDia(props.vuelo.fecha_hora))
 const hora = computed(() =>
   new Date(props.vuelo.fecha_hora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
 )
@@ -56,7 +52,7 @@ const hora = computed(() =>
 
     <div class="flex items-end justify-between gap-3 pt-4 border-t border-surface-border">
       <div>
-        <p class="text-xs font-semibold text-text-muted">HORA</p>
+        <p class="text-xs font-semibold text-text-muted uppercase">{{ dia }}</p>
         <p class="text-3xl font-black text-brand tracking-tight">{{ hora }}</p>
       </div>
       <div class="flex gap-1.5">

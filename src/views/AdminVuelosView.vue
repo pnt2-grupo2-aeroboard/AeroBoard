@@ -1,7 +1,8 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import useVuelosAdmin from '../composables/useVuelosAdmin.js'
-import { TIPOS, ESTADOS, AEROPUERTOS } from '../services/vuelos.js'
+import { TIPOS, ESTADOS, AEROPUERTOS, CIUDADES } from '../services/vuelos.js'
+import { etiquetaDia, ahoraParaInput } from '../utils/fecha.js'
 
 const { vuelos, loading, error, loadVuelos, createVuelo, editVuelo, deleteVuelo } = useVuelosAdmin()
 
@@ -61,6 +62,7 @@ const removeVuelo = async (vuelo) => {
   }
 }
 
+const minFecha = ahoraParaInput()   // al crear no deja elegir el pasado
 const hora = (fh) => new Date(fh).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
 
 const COLORES = {
@@ -91,7 +93,7 @@ onMounted(() => loadVuelos())
         <div class="grid grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
             <label for="numero" class="text-sm font-bold">Número</label>
-            <input id="numero" v-model="form.numero" required maxlength="8" placeholder="AR1520"
+            <input id="numero" v-model="form.numero" required maxlength="6" pattern="[A-Za-z]{2}[0-9]{3,4}" title="2 letras y 3 o 4 números, ej: AR1520" placeholder="AR1520"
               class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg" />
           </div>
           <div class="flex flex-col gap-1.5">
@@ -111,8 +113,11 @@ onMounted(() => loadVuelos())
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="ciudad" class="text-sm font-bold">{{ labelCiudad }}</label>
-            <input id="ciudad" v-model="form.origen_destino" required maxlength="40" placeholder="Córdoba"
-              class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg" />
+            <select id="ciudad" v-model="form.origen_destino" required
+              class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg">
+              <option value="" disabled>Elegí una ciudad</option>
+              <option v-for="(codigo, ciudad) in CIUDADES" :key="codigo" :value="ciudad">{{ ciudad }} ({{ codigo }})</option>
+            </select>
           </div>
         </div>
 
@@ -120,6 +125,7 @@ onMounted(() => loadVuelos())
           <div class="flex flex-col gap-1.5">
             <label for="fecha" class="text-sm font-bold">Fecha y hora</label>
             <input id="fecha" v-model="form.fecha_hora" type="datetime-local" required
+              :min="editingId === null ? minFecha : undefined"
               class="h-11 px-2 border border-surface-border rounded-btn bg-surface-bg text-sm" />
           </div>
           <div class="flex flex-col gap-1.5">
@@ -168,8 +174,11 @@ onMounted(() => loadVuelos())
             <tbody>
               <tr v-for="v in vuelos" :key="v.id" class="border-t border-surface-border"
                 :class="confirmId === v.id ? 'bg-red-50' : editingId === v.id ? 'bg-blue-50' : ''">
-                <td class="px-4 py-2 text-lg font-black text-brand">{{ hora(v.fecha_hora) }}</td>
-                <td class="px-4 py-2 font-bold">{{ v.numero }}</td>
+                <td class="px-4 py-2">
+                  <span class="block text-xs font-semibold text-text-muted uppercase">{{ etiquetaDia(v.fecha_hora) }}</span>
+                  <span class="text-lg font-black text-brand">{{ hora(v.fecha_hora) }}</span>
+                </td>
+                <td class="px-4 py-2 font-bold break-all">{{ v.numero }}</td>
                 <td class="px-4 py-2 text-sm">
                   <span class="font-bold">{{ v.aeropuerto }}</span> · {{ v.tipo === 'partida' ? 'a' : 'desde' }} {{ v.origen_destino }}
                 </td>

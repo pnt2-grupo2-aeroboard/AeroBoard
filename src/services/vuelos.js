@@ -6,34 +6,48 @@ export const TIPOS = ["arribo", "partida"]
 export const ESTADOS = ["a horario", "demorado", "embarcando", "cancelado"]
 export const AEROPUERTOS = ["AEP", "EZE"]
 
+// ciudades que se pueden elegir, con su código de aeropuerto
+export const CIUDADES = {
+  "Bariloche": "BRC", "Córdoba": "COR", "El Calafate": "FTE", "Iguazú": "IGR",
+  "Mar del Plata": "MDQ", "Mendoza": "MDZ", "Neuquén": "NQN", "Rosario": "ROS",
+  "Salta": "SLA", "Tucumán": "TUC", "Ushuaia": "USH",
+  "Lima": "LIM", "Madrid": "MAD", "Miami": "MIA", "Nueva York": "JFK",
+  "Punta Cana": "PUJ", "Río de Janeiro": "GIG", "Roma": "FCO",
+  "Santiago de Chile": "SCL", "São Paulo": "GRU",
+}
+
 const normalize = (vuelo) => ({
   numero: String(vuelo.numero ?? "").trim().toUpperCase(),
   aerolinea: String(vuelo.aerolinea ?? "Aerolíneas Argentinas").trim(),
   tipo: vuelo.tipo,
   origen_destino: String(vuelo.origen_destino ?? "").trim(),
   fecha_hora: vuelo.fecha_hora || null,
-  puerta: vuelo.puerta?.trim() || null,
+  puerta: vuelo.puerta?.trim().toUpperCase() || null,
   estado: vuelo.estado || "a horario",
   aeropuerto: vuelo.aeropuerto || "AEP",
 })
 
-const validate = (vuelo) => {
+const NUMERO = /^[A-Z]{2}\d{3,4}$/         // 2 letras + 3 o 4 números, ej: AR1520
+const PUERTA = /^[A-Z]?\d{1,3}$/             // ej: 5, 12, B3
+
+const validate = (vuelo, { nuevo = false } = {}) => {
   const errors = []
   if (!vuelo.numero) errors.push("Debe tener un número de vuelo")
-  else if (!/^[A-Z0-9]{3,8}$/.test(vuelo.numero)) errors.push("El número de vuelo debe tener de 3 a 8 letras o números (ej: AR1520)")
+  else if (!NUMERO.test(vuelo.numero)) errors.push("El número de vuelo debe ser 2 letras y 3 o 4 números (ej: AR1520)")
   if (!TIPOS.includes(vuelo.tipo)) errors.push("El tipo debe ser arribo o partida")
   if (!vuelo.origen_destino) errors.push("Debe tener origen o destino")
-  else if (vuelo.origen_destino.length > 40) errors.push("La ciudad puede tener hasta 40 caracteres")
-  if (vuelo.puerta && vuelo.puerta.length > 4) errors.push("La puerta puede tener hasta 4 caracteres")
+  else if (!CIUDADES[vuelo.origen_destino]) errors.push("Elegí una ciudad de la lista")
+  if (vuelo.puerta && !PUERTA.test(vuelo.puerta)) errors.push("La puerta debe ser un número, con una letra opcional (ej: 5 o B3)")
   if (!vuelo.fecha_hora) errors.push("Debe tener fecha y hora")
+  else if (nuevo && new Date(vuelo.fecha_hora) < new Date()) errors.push("No se pueden cargar vuelos en el pasado")
   if (!ESTADOS.includes(vuelo.estado)) errors.push("Estado inválido")
   if (!AEROPUERTOS.includes(vuelo.aeropuerto)) errors.push("Aeropuerto inválido")
   return errors
 }
 
-const prepareVuelo = (vuelo) => {
+const prepareVuelo = (vuelo, opciones) => {
   const data = normalize(vuelo)
-  const errors = validate(data)
+  const errors = validate(data, opciones)
   if (errors.length) throw new Error(errors.join(". "))
   return data
 }
@@ -48,7 +62,7 @@ const vueloService = {
     return data
   },
   async createVuelo(vuelo) {
-    const { data } = await api.post(API_ENDPOINT, prepareVuelo(vuelo), { headers: HEADER_ROWS })
+    const { data } = await api.post(API_ENDPOINT, prepareVuelo(vuelo, { nuevo: true }), { headers: HEADER_ROWS })
     return data[0]
   },
   async editVuelo(id, vuelo) {

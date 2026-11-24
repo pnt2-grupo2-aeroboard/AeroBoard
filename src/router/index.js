@@ -5,7 +5,6 @@ const routes = [
   { path: '/', name: 'Tablero', component: () => import('../views/TableroView.vue') },
   { path: '/admin', name: 'Admin', component: () => import('../views/AdminVuelosView.vue'), meta: { requiresAdmin: true } },
   { path: '/signin', name: 'Signin', component: () => import('../views/SignInView.vue') },
-  { path: '/signup', name: 'Signup', component: () => import('../views/SignUpView.vue') },
   { path: '/', name: 'Tablero', component: () => import('../views/TableroView.vue'), meta: { requiresAuth: true } },
 ]
 

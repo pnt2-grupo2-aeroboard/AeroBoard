@@ -29,9 +29,6 @@ const loginUser = async () => {
   }
 }
 
-const noDisponible = (proveedor) => {
-  error.value = `El inicio con ${proveedor} todavía no está disponible. Usá tu email.`
-}
 </script>
 
 <template>
@@ -40,23 +37,6 @@ const noDisponible = (proveedor) => {
       <div class="text-center">
         <h1 class="text-3xl font-black tracking-tight">Iniciar sesión</h1>
         <p class="text-text-muted mt-1">Entrá para ver y seguir tus vuelos.</p>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <button type="button" @click="noDisponible('Google')"
-          class="h-12 border border-surface-border rounded-btn font-semibold hover:bg-gray-50">
-          Continuar con Google
-        </button>
-        <button type="button" @click="noDisponible('Apple')"
-          class="h-12 bg-text-main text-white rounded-btn font-semibold hover:opacity-90">
-          Continuar con Apple
-        </button>
-      </div>
-
-      <div class="flex items-center gap-3" role="separator" aria-label="o">
-        <span class="flex-1 h-px bg-surface-border" aria-hidden="true"></span>
-        <span class="text-sm text-text-muted" aria-hidden="true">o</span>
-        <span class="flex-1 h-px bg-surface-border" aria-hidden="true"></span>
       </div>
 
       <form @submit.prevent="loginUser" class="flex flex-col gap-4">

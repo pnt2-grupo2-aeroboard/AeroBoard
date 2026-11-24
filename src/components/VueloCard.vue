@@ -6,16 +6,17 @@ const props = defineProps({
 })
 
 const CODIGOS = {
-  'Córdoba': 'COR', 'Bariloche': 'BRC', 'Mendoza': 'MDZ', 'Ushuaia': 'USH', 'Salta': 'SLA',
-  'Iguazú': 'IGR', 'El Calafate': 'FTE', 'Tucumán': 'TUC', 'Neuquén': 'NQN',
-  'Río de Janeiro': 'GIG', 'São Paulo': 'GRU', 'Miami': 'MIA', 'Madrid': 'MAD',
+  'Córdoba': 'COR', 'Bariloche': 'BRC', 'Mendoza': 'MDZ', 'Ushuaia': 'USH',
+  'Salta': 'SLA', 'Iguazú': 'IGR', 'El Calafate': 'FTE', 'Tucumán': 'TUC',
+  'Neuquén': 'NQN', 'Río de Janeiro': 'GIG', 'São Paulo': 'GRU',
+  'Miami': 'MIA', 'Madrid': 'MAD',
 }
 
 const ESTADOS = {
-  'a horario':  { label: 'A horario',  clases: 'bg-green-50 text-green-700 border-green-200' },
-  'demorado':   { label: 'Demorado',   clases: 'bg-amber-50 text-amber-700 border-amber-200' },
+  'a horario': { label: 'A horario', clases: 'bg-green-50 text-green-700 border-green-200' },
+  'demorado': { label: 'Demorado', clases: 'bg-amber-50 text-amber-700 border-amber-200' },
   'embarcando': { label: 'Embarcando', clases: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'cancelado':  { label: 'Cancelado',  clases: 'bg-red-50 text-red-700 border-red-200' },
+  'cancelado': { label: 'Cancelado', clases: 'bg-red-50 text-red-700 border-red-200' },
 }
 
 const esPartida = computed(() => props.vuelo.tipo === 'partida')
@@ -48,7 +49,10 @@ const hora = computed(() =>
       </div>
       <span class="text-2xl font-black">{{ destino }}</span>
     </div>
-    <p class="text-sm text-text-muted -mt-2">{{ esPartida ? 'Hacia' : 'Desde' }} <strong class="text-text-main">{{ vuelo.origen_destino }}</strong></p>
+
+    <p class="text-sm text-text-muted -mt-2">
+      {{ esPartida ? 'Hacia' : 'Desde' }} <strong class="text-text-main">{{ vuelo.origen_destino }}</strong>
+    </p>
 
     <div class="flex items-end justify-between gap-3 pt-4 border-t border-surface-border">
       <div>
@@ -56,8 +60,12 @@ const hora = computed(() =>
         <p class="text-3xl font-black text-brand tracking-tight">{{ hora }}</p>
       </div>
       <div class="flex gap-1.5">
-        <span class="px-2.5 py-1 rounded-btn border border-surface-border bg-surface-bg text-sm text-text-muted">{{ esPartida ? 'Partida' : 'Arribo' }}</span>
-        <span class="px-2.5 py-1 rounded-btn border border-surface-border bg-surface-bg text-sm text-text-muted">Puerta {{ vuelo.puerta ?? '–' }}</span>
+        <span class="px-2.5 py-1 rounded-btn border border-surface-border bg-surface-bg text-sm text-text-muted">
+          {{ esPartida ? 'Partida' : 'Arribo' }}
+        </span>
+        <span class="px-2.5 py-1 rounded-btn border border-surface-border bg-surface-bg text-sm text-text-muted">
+          Puerta {{ vuelo.puerta ?? '–' }}
+        </span>
       </div>
     </div>
   </article>

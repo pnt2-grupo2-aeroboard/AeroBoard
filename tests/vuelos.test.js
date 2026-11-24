@@ -4,7 +4,7 @@ import vueloService from '../src/services/vuelos.js'
 
 setActivePinia(createPinia())
 
-
+// la validación corre antes del pedido: si falla, nunca llega a Supabase
 const manana = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16)
 const vueloOk = { numero: 'AR1520', tipo: 'partida', origen_destino: 'Córdoba', puerta: '5', fecha_hora: manana }
 
@@ -14,9 +14,9 @@ describe('validación de vuelos', () => {
       .rejects.toThrow('2 letras y 3 o 4 números')
   })
 
-  it('rechaza una ciudad que no está en la lista', async () => {
-    await expect(vueloService.createVuelo({ ...vueloOk, origen_destino: 'asdasdasd' }))
-      .rejects.toThrow('Elegí una ciudad de la lista')
+  it('rechaza una ciudad con números', async () => {
+    await expect(vueloService.createVuelo({ ...vueloOk, origen_destino: '11223345564' }))
+      .rejects.toThrow('solo puede tener letras')
   })
 
   it('rechaza una puerta inválida', async () => {

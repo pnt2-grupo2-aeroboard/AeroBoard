@@ -113,11 +113,11 @@ onMounted(() => loadVuelos())
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="ciudad" class="text-sm font-bold">{{ labelCiudad }}</label>
-            <select id="ciudad" v-model="form.origen_destino" required
-              class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg">
-              <option value="" disabled>Elegí una ciudad</option>
-              <option v-for="(codigo, ciudad) in CIUDADES" :key="codigo" :value="ciudad">{{ ciudad }} ({{ codigo }})</option>
-            </select>
+            <input id="ciudad" v-model="form.origen_destino" list="ciudades" required maxlength="40" placeholder="Córdoba"
+              class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg" />
+            <datalist id="ciudades">
+              <option v-for="(codigo, ciudad) in CIUDADES" :key="codigo" :value="ciudad" />
+            </datalist>
           </div>
         </div>
 

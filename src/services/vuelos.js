@@ -29,6 +29,7 @@ const normalize = (vuelo) => ({
 
 const NUMERO = /^[A-Z]{2}\d{3,4}$/         // 2 letras + 3 o 4 números, ej: AR1520
 const PUERTA = /^[A-Z]?\d{1,3}$/             // ej: 5, 12, B3
+const CIUDAD = /^[A-Za-zÀ-ÿ .'-]{2,40}$/   // solo letras, espacios y acentos
 
 const validate = (vuelo, { nuevo = false } = {}) => {
   const errors = []
@@ -36,7 +37,7 @@ const validate = (vuelo, { nuevo = false } = {}) => {
   else if (!NUMERO.test(vuelo.numero)) errors.push("El número de vuelo debe ser 2 letras y 3 o 4 números (ej: AR1520)")
   if (!TIPOS.includes(vuelo.tipo)) errors.push("El tipo debe ser arribo o partida")
   if (!vuelo.origen_destino) errors.push("Debe tener origen o destino")
-  else if (!CIUDADES[vuelo.origen_destino]) errors.push("Elegí una ciudad de la lista")
+  else if (!CIUDAD.test(vuelo.origen_destino)) errors.push("La ciudad solo puede tener letras (2 a 40)")
   if (vuelo.puerta && !PUERTA.test(vuelo.puerta)) errors.push("La puerta debe ser un número, con una letra opcional (ej: 5 o B3)")
   if (!vuelo.fecha_hora) errors.push("Debe tener fecha y hora")
   else if (nuevo && new Date(vuelo.fecha_hora) < new Date()) errors.push("No se pueden cargar vuelos en el pasado")

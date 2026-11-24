@@ -23,12 +23,15 @@ const contadores = computed(() =>
   ESTADOS.map((e) => ({ ...e, cantidad: delAeropuerto.value.filter((v) => v.estado === e.valor).length }))
 )
 
+const normalizar = (texto) =>
+  (texto ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
 const vuelosFiltrados = computed(() => {
-  const texto = busqueda.value.trim().toLowerCase()
+  const texto = normalizar(busqueda.value.trim())
   return delAeropuerto.value
     .filter((v) => tipo.value === 'todos' || v.tipo === tipo.value)
     .filter((v) => !estado.value || v.estado === estado.value)
-    .filter((v) => !texto || v.numero.toLowerCase().includes(texto) || v.origen_destino.toLowerCase().includes(texto))
+    .filter((v) => !texto || normalizar(v.numero).includes(texto) || normalizar(v.origen_destino).includes(texto))
 })
 
 const cambiarAeropuerto = (codigo) => {

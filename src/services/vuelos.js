@@ -20,8 +20,11 @@ const normalize = (vuelo) => ({
 const validate = (vuelo) => {
   const errors = []
   if (!vuelo.numero) errors.push("Debe tener un número de vuelo")
+  else if (!/^[A-Z0-9]{3,8}$/.test(vuelo.numero)) errors.push("El número de vuelo debe tener de 3 a 8 letras o números (ej: AR1520)")
   if (!TIPOS.includes(vuelo.tipo)) errors.push("El tipo debe ser arribo o partida")
   if (!vuelo.origen_destino) errors.push("Debe tener origen o destino")
+  else if (vuelo.origen_destino.length > 40) errors.push("La ciudad puede tener hasta 40 caracteres")
+  if (vuelo.puerta && vuelo.puerta.length > 4) errors.push("La puerta puede tener hasta 4 caracteres")
   if (!vuelo.fecha_hora) errors.push("Debe tener fecha y hora")
   if (!ESTADOS.includes(vuelo.estado)) errors.push("Estado inválido")
   if (!AEROPUERTOS.includes(vuelo.aeropuerto)) errors.push("Aeropuerto inválido")

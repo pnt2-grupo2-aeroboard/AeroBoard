@@ -91,7 +91,7 @@ onMounted(() => loadVuelos())
         <div class="grid grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
             <label for="numero" class="text-sm font-bold">Número</label>
-            <input id="numero" v-model="form.numero" required placeholder="AR1520"
+            <input id="numero" v-model="form.numero" required maxlength="8" placeholder="AR1520"
               class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg" />
           </div>
           <div class="flex flex-col gap-1.5">
@@ -111,7 +111,7 @@ onMounted(() => loadVuelos())
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="ciudad" class="text-sm font-bold">{{ labelCiudad }}</label>
-            <input id="ciudad" v-model="form.origen_destino" required placeholder="Córdoba"
+            <input id="ciudad" v-model="form.origen_destino" required maxlength="40" placeholder="Córdoba"
               class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg" />
           </div>
         </div>
@@ -124,7 +124,7 @@ onMounted(() => loadVuelos())
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="puerta" class="text-sm font-bold">Puerta</label>
-            <input id="puerta" v-model="form.puerta" placeholder="5"
+            <input id="puerta" v-model="form.puerta" maxlength="4" placeholder="5"
               class="h-11 px-3 border border-surface-border rounded-btn bg-surface-bg" />
           </div>
         </div>

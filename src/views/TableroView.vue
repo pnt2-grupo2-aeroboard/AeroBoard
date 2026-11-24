@@ -19,20 +19,25 @@ const ESTADOS = [
 
 const delAeropuerto = computed(() => data.value.filter((v) => v.aeropuerto === aeropuerto.value))
 
-const contadores = computed(() =>
-  ESTADOS.map((e) => ({ ...e, cantidad: delAeropuerto.value.filter((v) => v.estado === e.valor).length }))
-)
-
 const normalizar = (texto) =>
   (texto ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 
-const vuelosFiltrados = computed(() => {
+// vuelos del aeropuerto con el tipo y la búsqueda aplicados (todavía sin el estado)
+const vuelosVisibles = computed(() => {
   const texto = normalizar(busqueda.value.trim())
   return delAeropuerto.value
     .filter((v) => tipo.value === 'todos' || v.tipo === tipo.value)
-    .filter((v) => !estado.value || v.estado === estado.value)
     .filter((v) => !texto || normalizar(v.numero).includes(texto) || normalizar(v.origen_destino).includes(texto))
 })
+
+// los contadores cuentan lo que se ve, así coinciden con las tarjetas
+const contadores = computed(() =>
+  ESTADOS.map((e) => ({ ...e, cantidad: vuelosVisibles.value.filter((v) => v.estado === e.valor).length }))
+)
+
+const vuelosFiltrados = computed(() =>
+  vuelosVisibles.value.filter((v) => !estado.value || v.estado === estado.value)
+)
 
 const cambiarAeropuerto = (codigo) => {
   aeropuerto.value = codigo
